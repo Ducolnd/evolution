@@ -5,6 +5,7 @@ import pygame
 pygame.init()
 
 #Game variables
+margin = 0
 WIDTH = 15 #10 perfect with x = 90
 HEIGHT = WIDTH
 tilesx = 40 #Most perfect is 90
@@ -54,7 +55,9 @@ class Players(object):
 		if fy < 0:
 			fy = 0
 		if fx > tilesx-1:
-			fx = tilesx
+			fx = tilesx-1
+		if fy > tilesy-1:
+			fy = tilesy-1
 
 		gameMap[fy][fx] = [self.speed, self.size, self.fdr, self.edr, self.mos]
 		gameMap[self.y][self.x] = 0
@@ -75,7 +78,6 @@ for i in range(starting):
 	y = random.randint(1, tilesy-1)
 
 	current.append(Players(speed, size, fdr, edr, mos, x, y))
-	gameMap[y][x] = 
 
 #Functions
 def function():
@@ -95,7 +97,7 @@ while run:
 	if wc > 5:
 		wc = 0
 		for player in current:
-			player.move(player.x, player.y-1)
+			player.move(player.x, player.y+1)
 
 
 	clock.tick(60)
