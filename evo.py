@@ -65,7 +65,7 @@ class Players(object):
 		self.y = fy
 
 	def draw(self, win):
-		pygame.draw.rect(win, self.color, ((margin+WIDTH)*(self.x)+margin, (margin+HEIGHT)*(self.y)+margin, WIDTH, HEIGHT))
+		pygame.draw.rect(win, self.color, (WIDTH*self.x, HEIGHT*self.y, WIDTH, HEIGHT))
 
 #Place x players on random locations
 for i in range(starting):
@@ -82,7 +82,8 @@ for i in range(starting):
 
 #Functions
 def function():
-	pass
+	x=1
+
 
 while run:
 	wc += 1
