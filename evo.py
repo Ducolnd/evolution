@@ -78,6 +78,7 @@ for i in range(starting):
 	y = random.randint(1, tilesy-1)
 
 	current.append(Players(speed, size, fdr, edr, mos, x, y))
+	gameMap[y][x] = [speed, size, fdr, edr, mos] 
 
 #Functions
 def function():
@@ -97,7 +98,7 @@ while run:
 	if wc > 5:
 		wc = 0
 		for player in current:
-			player.move(player.x, player.y+1)
+			player.move(player.x+1, player.y)
 
 
 	clock.tick(60)
