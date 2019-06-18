@@ -81,6 +81,7 @@ class Players(object):
 		current.remove(self)
 		gameMap[y][x] = 0
 
+
 class Food(object):
 	def __init__(self, x, y, sort):
 		self.x = x
