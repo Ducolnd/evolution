@@ -7,12 +7,12 @@ import pygame
 pygame.init()
 
 #Game variables
-WIDTH = 30 #10 perfect with x = 90
+WIDTH = 20 #10 perfect with x = 90
 HEIGHT = WIDTH
-tilesx = 10 #Most perfect is 90
+tilesx = 20 #Most perfect is 90
 tilesy = tilesx
 
-starting = 1
+starting = 10
 fsr = 60 #FoodSpawnRate per fsr iterations 
 fc = 0 #FoodCounter to track when to spawn
 wc = 0 #WalkingCounter to track when to move player
@@ -84,7 +84,7 @@ class Players(object):
 
 	def die(self):
 		current.remove(self)
-		gameMap[y][x] = 0
+		gameMap[self.y][self.x] = 0
 
 
 class Food(object):
@@ -102,9 +102,6 @@ class Food(object):
 	
 
 #Functions
-def function():
-	x=1
-
 def spawnFood():
 	x = random.randint(0, tilesx-1)
 	y = random.randint(0, tilesy-1)
@@ -144,10 +141,10 @@ while run:
 
 	win.fill(WHITE)
 
-	if fc > 30:
+	if fc > 100:
 		fc = 0
 		spawnFood()
-	if wc > 50:
+	if wc > 10:
 		wc = 0
 		for player in current:
 			player.move(player.x+1, player.y)
