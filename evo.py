@@ -104,8 +104,9 @@ def spawnFood():
 	y = random.randint(0, tilesy-1)
 	sort = random.choice(["Apple"]) #Add more later
 	if gameMap[y][x] is 0:
-		currentFood.append(Food(x, y, sort))
-		gameMap[y][x] = sort
+		foodClass = Food(x, y, sort)
+		currentFood.append(foodClass)
+		gameMap[y][x] = [sort, foodClass]
 
 def spawnPlayer():
 	speed = random.randint(1,100)
