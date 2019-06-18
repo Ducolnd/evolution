@@ -85,6 +85,10 @@ class Players(object):
 	def die(self):
 		current.remove(self)
 		gameMap[y][x] = 0
+		
+	def find_objective(self, objective):
+                for snack in range(currentFood):
+                        
 
 
 class Food(object):
