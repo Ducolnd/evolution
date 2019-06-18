@@ -7,12 +7,12 @@ import pygame
 pygame.init()
 
 #Game variables
-WIDTH = 20 #10 perfect with x = 90
+WIDTH = 30 #10 perfect with x = 90
 HEIGHT = WIDTH
-tilesx = 3 #Most perfect is 90
+tilesx = 10 #Most perfect is 90
 tilesy = tilesx
 
-starting = 5
+starting = 1
 fsr = 60 #FoodSpawnRate per fsr iterations 
 fc = 0 #FoodCounter to track when to spawn
 wc = 0 #WalkingCounter to track when to move player
@@ -53,7 +53,7 @@ class Players(object):
 
 	def move(self, fx, fy):
 		self.food += -1
-		if food <= 0:
+		if self.food <= 0:
 			self.die()
 
 		if fx < 0:
@@ -65,9 +65,10 @@ class Players(object):
 		if fy > tilesy-1:
 			fy = tilesy-1
 
-		if gameMap[fy][fx] == "Apple":
-			self.food += 10
-
+		if gameMap[fy][fx] is not 0:
+			if "Apple" in gameMap[fy][fx]:
+				self.food += 10
+				gameMap[fy][fx][1].eat()
 
 		gameMap[fy][fx] = [self.speed, self.size, self.fdr, self.edr, self.mos]
 		gameMap[self.y][self.x] = 0
@@ -90,6 +91,7 @@ class Food(object):
 
 	def eat(self):
 		currentFood.remove(self)
+		gameMap[self.y][self.x] = 0
 
 	def draw(self, win):
 		pygame.draw.rect(win, RED, (WIDTH*self.x, HEIGHT*self.y, WIDTH, HEIGHT))
@@ -135,7 +137,16 @@ while run:
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			run = False
+
 	win.fill(WHITE)
+
+	if fc > 30:
+		fc = 0
+		spawnFood()
+	if wc > 50:
+		wc = 0
+		for player in current:
+			player.move(player.x+1, player.y)
 
 	for player in current: #Draw all objects in class Players
 		player.draw(win)
