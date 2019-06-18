@@ -27,12 +27,14 @@ screen_width = tilesx*WIDTH
 win = pygame.display.set_mode((screen_height, screen_width))
 pygame.display.set_caption("Evolution")
 run = True
+ffont = pygame.font.SysFont("comicsansms", 20)
 clock = pygame.time.Clock()
 
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
+BLUE = (0, 0, 255)
 
 
 class Players(object):
@@ -76,6 +78,8 @@ class Players(object):
 
 	def draw(self, win):
 		pygame.draw.rect(win, self.color, (WIDTH*self.x, HEIGHT*self.y, WIDTH, HEIGHT))
+		food_number = ffont.render(str(self.food), True, BLACK)
+		win.blit(food_number, (self.x*WIDTH+(food_number.get_width()/2), self.y*HEIGHT+(food_number.get_height()/2)))
 
 	def die(self):
 		current.remove(self)
