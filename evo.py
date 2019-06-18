@@ -9,10 +9,10 @@ pygame.init()
 #Game variables
 WIDTH = 20 #10 perfect with x = 90
 HEIGHT = WIDTH
-tilesx = 10 #Most perfect is 90
+tilesx = 3 #Most perfect is 90
 tilesy = tilesx
 
-starting = 50
+starting = 5
 fsr = 60 #FoodSpawnRate per fsr iterations 
 fc = 0 #FoodCounter to track when to spawn
 wc = 0 #WalkingCounter to track when to move player
@@ -36,23 +36,26 @@ RED = (255, 0, 0)
 
 
 class Players(object):
-	def __init__(self, speed, size, fdr, edr, mos, x, y):
+	def __init__(self, speed, size, fdr, edr, mos, food, x, y):
 		#Generation variables
 		self.speed = speed
 		self.size = size
 		self.fdr = fdr #FoodDetectionRange
 		self.edr = edr #EnemyDetectionRange
 		self.mos = mos #MatingOffSet
+		self.food = food
 		self.x = x
 		self.y = y
 
 		#Player variables
 		self.ttnm = 0
-		self.food = 0
 		self.color = [(self.speed + self.size)*255/200, (self.fdr + self.edr)*255/200, self.mos*255/100]
 
 	def move(self, fx, fy):
 		self.food += -1
+		if food <= 0:
+			self.die()
+
 		if fx < 0:
 			fx = 0
 		if fy < 0:
@@ -63,7 +66,8 @@ class Players(object):
 			fy = tilesy-1
 
 		if gameMap[fy][fx] == "Apple":
-			food += 10
+			self.food += 10
+
 
 		gameMap[fy][fx] = [self.speed, self.size, self.fdr, self.edr, self.mos]
 		gameMap[self.y][self.x] = 0
@@ -74,32 +78,21 @@ class Players(object):
 		pygame.draw.rect(win, self.color, (WIDTH*self.x, HEIGHT*self.y, WIDTH, HEIGHT))
 
 	def die(self):
-		pass
+		current.remove(self)
+		gameMap[y][x] = 0
 
 class Food(object):
-	"""docstring for food"""
 	def __init__(self, x, y, sort):
 		self.x = x
 		self.y = y
 		self.sort = sort
 
+	def eat(self):
+		currentFood.remove(self)
+
 	def draw(self, win):
 		pygame.draw.rect(win, RED, (WIDTH*self.x, HEIGHT*self.y, WIDTH, HEIGHT))
-		
-
-
-#Place x players on random locations
-for i in range(starting):
-	speed = random.randint(1,100)
-	size = random.randint(1,100)
-	fdr = random.randint(1,100)
-	edr = random.randint(1,100)
-	mos = random.randint(1,100)
-	x = random.randint(0, tilesx-1)
-	y = random.randint(0, tilesy-1)
-
-	current.append(Players(speed, size, fdr, edr, mos, x, y))
-	gameMap[y][x] = [speed, size, fdr, edr, mos]
+	
 
 #Functions
 def function():
@@ -113,6 +106,25 @@ def spawnFood():
 		currentFood.append(Food(x, y, sort))
 		gameMap[y][x] = sort
 
+def spawnPlayer():
+	speed = random.randint(1,100)
+	size = random.randint(1,100)
+	fdr = random.randint(1,100)
+	edr = random.randint(1,100)
+	mos = random.randint(1,100)
+	food = random.randint(40,120)
+	x = random.randint(0, tilesx-1)
+	y = random.randint(0, tilesy-1)
+
+	if gameMap[y][x] is 0:
+		gameMap[y][x] = [speed, size, fdr, edr, mos]
+		current.append(Players(speed, size, fdr, edr, mos, food, x, y))
+	else:
+		spawnPlayer()
+
+#Place x players on random locations
+for i in range(starting):
+	spawnPlayer()
 
 while run:
 	fc += 1
@@ -122,11 +134,6 @@ while run:
 		if event.type == pygame.QUIT:
 			run = False
 	win.fill(WHITE)
-
-	if wc > 40:
-		wc = 0
-		for player in current:
-			player.move(player.x+1, player.y)
 
 	for player in current: #Draw all objects in class Players
 		player.draw(win)
