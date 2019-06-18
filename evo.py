@@ -79,7 +79,7 @@ class Players(object):
 	def draw(self, win):
 		pygame.draw.rect(win, self.color, (WIDTH*self.x, HEIGHT*self.y, WIDTH, HEIGHT))
 		food_number = ffont.render(str(self.food), True, BLACK)
-		win.blit(food_number, (self.x*WIDTH+(food_number.get_width()/2), self.y*HEIGHT+(food_number.get_height()/2)))
+		win.blit(food_number, (self.x*WIDTH+(WIDTH/2-food_number.get_width()/2), self.y*HEIGHT+(HEIGHT/2-food_number.get_height()/2)))
 
 	def die(self):
 		current.remove(self)
