@@ -52,6 +52,7 @@ class Players(object):
 		self.color = [(self.speed + self.size)*255/200, (self.fdr + self.edr)*255/200, self.mos*255/100]
 		self.x = x
 		self.y = y
+		self.wc = 0
 		self.wander = False
 
 	def move(self, fx, fy):
@@ -87,9 +88,12 @@ class Players(object):
 		current.remove(self)
 		gameMap[y][x] = 0
 		gameMap[self.y][self.x] = 0
-		
+
+        def calc_move(self):
+	
 	def find_objective(self, objective):
-		pass
+                
+		
 
 	def wander(self):
 		ry = random.randint(-1, 1)
@@ -144,8 +148,7 @@ for i in range(starting):
 
 while run:
 	fc += 1
-	wc += 1
-
+        
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			run = False
@@ -155,10 +158,10 @@ while run:
 	if fc > 100:
 		fc = 0
 		spawnFood()
-	if wc > 10:
-		wc = 0
-		for player in current:
-			player.move(player.x+1, player.y)
+	for player in current:
+                player.wc += 1
+                if player.wc>100-player.speed:
+                        player.calc_move()
 
 	for player in current: #Draw all objects in class Players
 		player.draw(win)
