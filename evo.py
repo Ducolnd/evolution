@@ -88,9 +88,6 @@ class Players(object):
 		current.remove(self)
 		gameMap[self.y][self.x] = 0
 
-	def calc_move(self):
-		pass
-
 	def find_objective(self, objective):
 		pass
 
