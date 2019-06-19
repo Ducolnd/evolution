@@ -85,7 +85,6 @@ class Players(object):
 
 	def die(self):
 		current.remove(self)
-		gameMap[y][x] = 0
 		gameMap[self.y][self.x] = 0
 		
 	def find_objective(self, objective):
@@ -93,10 +92,11 @@ class Players(object):
 
 	def wander(self):
 		ry = random.randint(-1, 1)
-		if not ry: #If 
+		if not ry: #If ry = 0 so it will not not move.
 			rx = random.choice([-1, 1])
 		else:
 			rx = random.randint(-1, 1)
+		self.move(self.x+rx, self.y+ry)
 		
                         
 class Food(object):
