@@ -9,7 +9,7 @@ pygame.init()
 #Game variables
 WIDTH = 20 #10 perfect with x = 90
 HEIGHT = WIDTH
-tilesx = 20 #Most perfect is 90
+tilesx = 40 #Most perfect is 90
 tilesy = tilesx
 
 starting = 10
@@ -84,23 +84,17 @@ class Players(object):
 
 	def die(self):
 		current.remove(self)
-<<<<<<< HEAD
-		gameMap[y][x] = 0
-		
-	def find_objective(self, objective):
-                for snack in range(currentFood):
-                        
-=======
+
 		gameMap[self.y][self.x] = 0
->>>>>>> b2ae6d9e38598b38abdf8a52e7731d7786a75154
+		
 
-
+                        
 class Food(object):
 	def __init__(self, x, y, sort):
 		self.x = x
 		self.y = y
 		self.sort = sort
-
+                
 	def eat(self):
 		currentFood.remove(self)
 		gameMap[self.y][self.x] = 0
