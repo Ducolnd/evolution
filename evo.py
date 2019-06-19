@@ -11,6 +11,7 @@ WIDTH = 20 #10 perfect with x = 90
 HEIGHT = WIDTH
 tilesx = 40 #Most perfect is 90
 tilesy = tilesx
+information_panel_width = 200
 
 starting = 10
 fsr = 60 #FoodSpawnRate per fsr iterations 
@@ -86,6 +87,7 @@ class Players(object):
 
 	def die(self):
 		current.remove(self)
+		gameMap[y][x] = 0
 		gameMap[self.y][self.x] = 0
 
 	def find_objective(self, objective):
@@ -93,11 +95,10 @@ class Players(object):
 
 	def wander(self):
 		ry = random.randint(-1, 1)
-		if not ry: #If ry = 0 so it will not not move.
+		if not ry: #If 
 			rx = random.choice([-1, 1])
 		else:
 			rx = random.randint(-1, 1)
-		self.move(self.x+rx, self.y+ry)
 		
                         
 class Food(object):
@@ -139,6 +140,9 @@ def spawnPlayer():
 	else:
 		spawnPlayer()
 
+def Information_panel_draw():
+        
+
 #Place x players on random locations
 for i in range(starting):
 	spawnPlayer()
@@ -166,7 +170,9 @@ while run:
 	for snacks in currentFood: #Draw all objects in class Players
 		snacks.draw(win)
 
-	clock.tick(600)
+	Information_panel_draw()
+	clock.tick(60)
+
 	pygame.display.flip()
 
 pygame.quit()
