@@ -46,12 +46,13 @@ class Players(object):
 		self.edr = edr #EnemyDetectionRange
 		self.mos = mos #MatingOffSet
 		self.food = food
-		self.x = x
-		self.y = y
 
 		#Player variables
 		self.ttnm = 0
 		self.color = [(self.speed + self.size)*255/200, (self.fdr + self.edr)*255/200, self.mos*255/100]
+		self.x = x
+		self.y = y
+		self.wander = False
 
 	def move(self, fx, fy):
 		self.food += -1
@@ -92,6 +93,10 @@ class Players(object):
 
 	def wander(self):
 		ry = random.randint(-1, 1)
+		if not ry: #If 
+			rx = random.choice([-1, 1])
+		else:
+			rx = random.randint(-1, 1)
 		
                         
 class Food(object):
@@ -128,7 +133,7 @@ def spawnPlayer():
 	y = random.randint(0, tilesy-1)
 
 	if gameMap[y][x] is 0:
-		gameMap[y][x] = [speed, size, fdr, edr, mos]
+		gameMap[y][x] = [speed, 100-speed, fdr, edr, mos]
 		current.append(Players(speed, fdr, edr, mos, food, x, y))
 	else:
 		spawnPlayer()
