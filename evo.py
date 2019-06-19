@@ -38,10 +38,10 @@ BLUE = (0, 0, 255)
 
 
 class Players(object):
-	def __init__(self, speed, size, fdr, edr, mos, food, x, y):
+	def __init__(self, speed, fdr, edr, mos, food, x, y):
 		#Generation variables
 		self.speed = speed
-		self.size = size
+		self.size = 100-self.speed
 		self.fdr = fdr #FoodDetectionRange
 		self.edr = edr #EnemyDetectionRange
 		self.mos = mos #MatingOffSet
@@ -90,6 +90,10 @@ class Players(object):
 	def find_objective(self, objective):
 		pass
 
+	def wander(self):
+		ry = random.randint(-1, 1)
+		
+
 
 class Food(object):
 	def __init__(self, x, y, sort):
@@ -117,7 +121,6 @@ def spawnFood():
 
 def spawnPlayer():
 	speed = random.randint(1,100)
-	size = random.randint(1,100)
 	fdr = random.randint(1,100)
 	edr = random.randint(1,100)
 	mos = random.randint(1,100)
@@ -127,7 +130,7 @@ def spawnPlayer():
 
 	if gameMap[y][x] is 0:
 		gameMap[y][x] = [speed, size, fdr, edr, mos]
-		current.append(Players(speed, size, fdr, edr, mos, food, x, y))
+		current.append(Players(speed, fdr, edr, mos, food, x, y))
 	else:
 		spawnPlayer()
 
