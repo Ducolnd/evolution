@@ -54,7 +54,7 @@ class Players(object):
 		self.x = x
 		self.y = y
 		self.wc = 0
-		self.wander = False
+		self.wanderBool = False
 
 	def move(self, fx, fy):
 		self.food += -1
@@ -90,13 +90,18 @@ class Players(object):
 		gameMap[y][x] = 0
 		gameMap[self.y][self.x] = 0
 
+<<<<<<< HEAD
 
         def calc_move(self):
 
                 
+=======
+	def calc_move(self):
+		pass
+
+>>>>>>> 02932982c36eaec35ff700bb904f2363448216b5
 	def find_objective(self, objective):
-                
-		
+		pass
 
 	def wander(self):
 		ry = random.randint(-1, 1)
@@ -164,17 +169,20 @@ while run:
 	if fc > 100:
 		fc = 0
 		spawnFood()
-	for player in current:
-                player.wc += 1
-                if player.wc>100-player.speed:
-                        player.calc_move()
 
-	for player in current: #Draw all objects in class Players
-		player.draw(win)
+	for player in current:
+		player.wc += 1
+		if player.wc > (100-player.speed):
+			player.wc = 0
+			player.wander()
+		player.draw(win) #Draw all objects in class Players
+
 	for snacks in currentFood: #Draw all objects in class Players
 		snacks.draw(win)
+
 	Information_panel_draw()
 	clock.tick(60)
+
 	pygame.display.flip()
 
 pygame.quit()
