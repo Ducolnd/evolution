@@ -3,22 +3,23 @@
 #Importing modules
 import random
 import pygame
+from pprint import pprint as pp
 
 pygame.init()
 
 #Game variables
-WIDTH = 20 #10 perfect with x = 90
+WIDTH = 25 #10 perfect with x = 90
 HEIGHT = WIDTH
 tilesx = 40 #Most perfect is 90
 tilesy = tilesx
-information_panel_width = 200
 
 starting = 10
-fsr = 60 #FoodSpawnRate per fsr iterations 
+fsr = 20 #FoodSpawnRate per fsr iterations 
 fc = 0 #FoodCounter to track when to spawn
 wc = 0 #WalkingCounter to track when to move player
 current = []
 currentFood = []
+l = []
 
 gameMap = [[0 for b in range(tilesx)] for u in range(tilesy)]
 
@@ -55,6 +56,8 @@ class Players(object):
 		self.y = y
 		self.wc = 0
 		self.wanderBool = False
+		self.objective = []
+		self.steps = 10
 
 	def move(self, fx, fy):
 		self.food += -1
@@ -72,11 +75,13 @@ class Players(object):
 
 		if gameMap[fy][fx] is not 0:
 			if "Apple" in gameMap[fy][fx]:
+				self.objective = []
+				self.steps = 10
 				self.food += 10
 				gameMap[fy][fx][1].eat()
 
-		gameMap[fy][fx] = [self.speed, self.size, self.fdr, self.edr, self.mos]
 		gameMap[self.y][self.x] = 0
+		gameMap[fy][fx] = [self.speed, self.size, self.fdr, self.edr, self.mos]
 		self.x = fx
 		self.y = fy
 
@@ -87,20 +92,70 @@ class Players(object):
 
 	def die(self):
 		current.remove(self)
-		gameMap[y][x] = 0
 		gameMap[self.y][self.x] = 0
 
-	def find_objective(self, objective):
-		pass
+	def find_objective(self):
+		for y in range((self.fdr*2)+1):
+			t = self.y-self.fdr+y
+			if t < 0:
+				continue
+			if t >= tilesy:
+				continue
+			for x in range((self.fdr*2)+1):
+				t2 = self.x - self.fdr + x
+				if t2 < 0:
+					continue
+				if t2 >= tilesx:
+					continue
+				if gameMap[t][t2] is not 0:
+					if "Apple" in gameMap[t][t2]:
+						if (abs(gameMap[t][t2][1].y - self.y) + abs(gameMap[t][t2][1].x - self.x)) < self.steps:
+							self.objective = [gameMap[t][t2][1].y, gameMap[t][t2][1].x]
+							self.steps = (abs(self.objective[0] - self.y) + abs(self.objective[1] - self.x))
+
+	def whereToMove(self):
+		if self.objective:
+			if self.y == self.objective[0] and self.x == self.objective[1]:
+				self.objective = []
+
+		if self.objective:
+			a = self.objective[0] - self.y
+			b = self.objective[1] - self.x
+
+			if not b:
+				if a < 0:
+					self.move(self.x, self.y-1)
+				if a > 0:
+					self.move(self.x, self.y+1)
+			elif not a:
+				if b < 0:
+					self.move(self.x-1, self.y)
+				if b > 0:
+					self.move(self.x+1, self.y)
+			elif random.choice([0,1]):
+				if b < 0:
+					self.move(self.x-1, self.y)
+				if b > 0:
+					self.move(self.x+1, self.y)
+			else:
+				if a < 0:
+					self.move(self.x, self.y-1)
+				if a > 0:
+					self.move(self.x, self.y+1)
 
 	def wander(self):
 		ry = random.randint(-1, 1)
-		if not ry: #If 
+		if not ry: #If ry = 0
 			rx = random.choice([-1, 1])
 		else:
 			rx = random.randint(-1, 1)
-		
+
+		if random.choice([0,1]):
+			self.move(self.x+random.choice([-1,1]), self.y)
+		else:
+			self.move(self.x, self.y+random.choice([-1,1]))
                         
+
 class Food(object):
 	def __init__(self, x, y, sort):
 		self.x = x
@@ -127,7 +182,7 @@ def spawnFood():
 
 def spawnPlayer():
 	speed = random.randint(1,100)
-	fdr = random.randint(1,100)
+	fdr = random.randint(1,6)
 	edr = random.randint(1,100)
 	mos = random.randint(1,100)
 	food = random.randint(40,120)
@@ -139,9 +194,6 @@ def spawnPlayer():
 		current.append(Players(speed, fdr, edr, mos, food, x, y))
 	else:
 		spawnPlayer()
-
-def Information_panel_draw():
-        
 
 #Place x players on random locations
 for i in range(starting):
@@ -156,7 +208,7 @@ while run:
 
 	win.fill(WHITE)
 
-	if fc > 100:
+	if fc > fsr:
 		fc = 0
 		spawnFood()
 
@@ -164,14 +216,19 @@ while run:
 		player.wc += 1
 		if player.wc > (100-player.speed):
 			player.wc = 0
-			player.wander()
-		player.draw(win) #Draw all objects in class Players
 
+			player.find_objective()
+			if not player.objective:
+				player.wander()
+			player.whereToMove()
+			
+
+	for player in current:
+		player.draw(win) #Draw all objects in class Players
 	for snacks in currentFood: #Draw all objects in class Players
 		snacks.draw(win)
 
-	Information_panel_draw()
-	clock.tick(60)
+	clock.tick(30)
 
 	pygame.display.flip()
 
