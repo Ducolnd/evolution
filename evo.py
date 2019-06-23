@@ -8,19 +8,20 @@ from pprint import pprint as pp
 pygame.init()
 
 #Game variables
-WIDTH = 25 #10 perfect with x = 90
+WIDTH = 20 #10 perfect with x = 90
 HEIGHT = WIDTH
-tilesx = 40 #Most perfect is 90
-tilesy = tilesx
+tilesx = 54 #Most perfect is 90
+tilesy = 96
 
-starting = 30
-startingFood = 30
-fsr = 20 #FoodSpawnRate per fsr iterations 
+starting = 100
+startingFood = 400
+fsr = 60 #FoodSpawnRate per fsr iterations 
 fc = 0 #FoodCounter to track when to spawn
 wc = 0 #WalkingCounter to track when to move player
 current = []
 currentFood = []
-l = []
+pause = False
+clockSpeed = 100
 
 gameMap = [[0 for b in range(tilesx)] for u in range(tilesy)]
 
@@ -65,7 +66,7 @@ class Players(object):
 		self.steps = 10
 
 	def move(self, fx, fy):
-		self.food += random.randint(-2, -1)
+		self.food += -1 #random.randint(-2, -1)
 
 		if fx < 0:
 			fx = 0
@@ -89,14 +90,14 @@ class Players(object):
 		self.y = fy
 
 	def draw(self, win):
-		pygame.draw.rect(win, self.color, (WIDTH*self.x, HEIGHT*self.y, WIDTH, HEIGHT))
+		pygame.draw.rect(win, self.color, (WIDTH*self.y, HEIGHT*self.x, WIDTH, HEIGHT))
 		if self.wanderBool:
-			pygame.draw.rect(win, BLACK, (WIDTH*self.x, HEIGHT*self.y, WIDTH, HEIGHT), 1)
+			pygame.draw.rect(win, BLACK, (WIDTH*self.y, HEIGHT*self.x, WIDTH, HEIGHT), 1)
 		if self.mateBool:
-			pygame.draw.rect(win, DARKBLUE, (WIDTH*self.x, HEIGHT*self.y, WIDTH, HEIGHT), 1)
+			pygame.draw.rect(win, DARKBLUE, (WIDTH*self.y, HEIGHT*self.x, WIDTH, HEIGHT), 1)
 
 		food_number = ffont.render(str(self.food), True, BLACK)
-		win.blit(food_number, (self.x*WIDTH+(WIDTH/2-food_number.get_width()/2), self.y*HEIGHT+(HEIGHT/2-food_number.get_height()/2)))
+		win.blit(food_number, (self.y*WIDTH+(WIDTH/2-food_number.get_width()/2), self.x*HEIGHT+(HEIGHT/2-food_number.get_height()/2)))
 
 	def die(self):
 		current.remove(self)
@@ -116,7 +117,7 @@ class Players(object):
 				if t2 >= tilesx:
 					continue
 				if gameMap[t][t2] is not 0:
-					if self.wanderBool:
+					if self.mateBool:
 						if "Player" in gameMap[t][t2]:
 							if gameMap[t][t2][1].mateBool:
 								self.objective = [t, t2]
@@ -166,23 +167,20 @@ class Players(object):
 
 	def mate(self):
 		self.wanderBool = True
-		print("Wanderbool True")
 		self.find_objective()
 		self.whereToMove()
 
 	def main(self):
 		if self.food <= 0:
 			self.die()
-		if self.food > self.mos:
-			self.mate()
-		else:
-			self.wc += 1
-			if self.wc > (100-self.speed):
-				self.wc = 0
-				self.find_objective()
-				if not self.objective:
-					self.wander()
-				self.whereToMove()
+
+		self.wc += 1
+		if self.wc > (100-self.speed):
+			self.wc = 0
+			self.find_objective()
+			if not self.objective:
+				self.wander()
+			self.whereToMove()
 
 		self.draw(win)
                         
@@ -198,7 +196,7 @@ class Food(object):
 		gameMap[self.y][self.x] = 0
 
 	def draw(self, win):
-		pygame.draw.rect(win, RED, (WIDTH*self.x, HEIGHT*self.y, WIDTH, HEIGHT))
+		pygame.draw.rect(win, RED, (WIDTH*self.y, HEIGHT*self.x, WIDTH, HEIGHT))
 	
 
 #Functions
@@ -224,37 +222,49 @@ def spawnPlayer():
 	if gameMap[y][x] is 0:
 		gameMap[y][x] = ["Player", Players(speed, fdr, edr, mos, fgt, food, True, x, y), speed, 100-speed, fdr, edr, mos]
 		current.append(Players(speed, fdr, edr, mos, fgt, food, True, x, y))
-		print(fdr)
 	else:
 		spawnPlayer()
 
 #Place x players on random locations
 for i in range(starting):
 	spawnPlayer()
+
 for i in range(startingFood):
 	spawnFood()
 
-while run:
-	fc += 1
-        
+while run:        
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			run = False
 
-	win.fill(WHITE)
+	if pygame.key.get_pressed()[pygame.K_SPACE]:
+		pause = True
+	else:
+		pause = False
 
-	if fc > fsr:
-		fc = 0
-		spawnFood()
+	if pygame.key.get_pressed()[pygame.K_UP]:
+		clockSpeed += 1
+		print(clockSpeed)
+	if pygame.key.get_pressed()[pygame.K_DOWN]:
+		clockSpeed += -1
+		print(clockSpeed)
 
-	for player in current:
-		player.main()
+	if not pause:
+		fc += 1
+		win.fill(WHITE)
 
-	for snacks in currentFood: #Draw all objects in class Players
-		snacks.draw(win)
+		if fc > fsr:
+			fc = 0
+			spawnFood()
 
-	clock.tick(1000)
+		for player in current:
+			player.main()
 
-	pygame.display.flip()
+		for snacks in currentFood: #Draw all objects in class Players
+			snacks.draw(win)
+
+		clock.tick(clockSpeed)
+
+		pygame.display.flip()
 
 pygame.quit()
