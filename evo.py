@@ -8,13 +8,13 @@ from pprint import pprint as pp
 pygame.init()
 
 #Game variables
-WIDTH = 20 #10 perfect with x = 90
+WIDTH = 20 #20 perfect 
 HEIGHT = WIDTH
-tilesx = 54 #Most perfect is 90
-tilesy = 96
+tilesx = 7 #54 perfect
+tilesy = 7 # 96 perfect
 
-starting = 100
-startingFood = 400
+starting = 2
+startingFood = 20
 fsr = 60 #FoodSpawnRate per fsr iterations 
 fc = 0 #FoodCounter to track when to spawn
 wc = 0 #WalkingCounter to track when to move player
@@ -94,7 +94,7 @@ class Players(object):
 		if self.wanderBool:
 			pygame.draw.rect(win, BLACK, (WIDTH*self.y, HEIGHT*self.x, WIDTH, HEIGHT), 1)
 		if self.mateBool:
-			pygame.draw.rect(win, DARKBLUE, (WIDTH*self.y, HEIGHT*self.x, WIDTH, HEIGHT), 1)
+			pygame.draw.rect(win, RED, (WIDTH*self.y, HEIGHT*self.x, WIDTH, HEIGHT), 1)
 
 		food_number = ffont.render(str(self.food), True, BLACK)
 		win.blit(food_number, (self.y*WIDTH+(WIDTH/2-food_number.get_width()/2), self.x*HEIGHT+(HEIGHT/2-food_number.get_height()/2)))
@@ -103,7 +103,7 @@ class Players(object):
 		current.remove(self)
 		gameMap[self.y][self.x] = 0
 
-	def find_objective(self):
+	def find_objective(self, kind):
 		for y in range((self.fdr*2)+1):
 			t = self.y-self.fdr+y
 			if t < 0:
@@ -117,11 +117,15 @@ class Players(object):
 				if t2 >= tilesx:
 					continue
 				if gameMap[t][t2] is not 0:
-					if self.mateBool:
+					if kind == "mate":
+						print("searching")
 						if "Player" in gameMap[t][t2]:
+							print("mater found")
 							if gameMap[t][t2][1].mateBool:
+								print("Found mater")
 								self.objective = [t, t2]
-					else:
+
+					if kind == "food":
 						if "Apple" in gameMap[t][t2]:
 							if (abs(gameMap[t][t2][1].y - self.y) + abs(gameMap[t][t2][1].x - self.x)) < self.steps:
 								self.objective = [gameMap[t][t2][1].y, gameMap[t][t2][1].x]
@@ -166,21 +170,30 @@ class Players(object):
 			self.move(self.x, self.y+random.choice([-1,1]))
 
 	def mate(self):
-		self.wanderBool = True
-		self.find_objective()
+		print("mating")
+		self.find_objective("mate")
+		if not self.objective:
+			self.find_objective("food")
+			if not self.objective:
+				self.wander()
 		self.whereToMove()
 
 	def main(self):
 		if self.food <= 0:
 			self.die()
-
+		if self.food >= self.mos:
+			self.mateBool = True
 		self.wc += 1
+
 		if self.wc > (100-self.speed):
 			self.wc = 0
-			self.find_objective()
-			if not self.objective:
-				self.wander()
-			self.whereToMove()
+			if self.mateBool:
+				self.mate()
+			else:
+				self.find_objective("food")
+				if not self.objective:
+					self.wander()
+				self.whereToMove()
 
 		self.draw(win)
                         
@@ -218,6 +231,7 @@ def spawnPlayer():
 	mos = random.randint(fgt+50,fgt+150)
 	x = random.randint(0, tilesx-1)
 	y = random.randint(0, tilesy-1)
+	print(mos)
 
 	if gameMap[y][x] is 0:
 		gameMap[y][x] = ["Player", Players(speed, fdr, edr, mos, fgt, food, True, x, y), speed, 100-speed, fdr, edr, mos]
