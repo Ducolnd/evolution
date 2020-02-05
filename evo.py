@@ -1,5 +1,3 @@
-#cd DataDuco\Documenten\Developer\Python\projects\evolution
-
 #Importing modules
 import random
 import pygame
